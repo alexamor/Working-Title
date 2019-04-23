@@ -38,6 +38,11 @@ public class ChMovAl : MonoBehaviour
             return below || right || left;
         }
 
+        public bool hasWall()
+        {
+            return right || left;
+        }
+
         public void reset()
         {
             right = left = above = below = becameGroundedThisFrame = movingDownSlope = false;
@@ -602,7 +607,7 @@ public class ChMovAl : MonoBehaviour
         if (Physics2D.Raycast(transform.position, Vector2.left, boxCollider.bounds.extents.x + 0.05f, platformMask & ~oneWayPlatformMask))
         {
             collisionState.left = true;
-            Debug.Log("HIT");
+            //Debug.Log("HIT");
         }
         
 

@@ -32,7 +32,7 @@ public class PlayerMovement : MonoBehaviour {
     private void Awake()
     {
         controller = GetComponent<ChMovAl>();
-        //animator = GetComponent<Animator>();
+        anim = GetComponent<Animator>();
 
         //runSpeed = onGroundRunSpeed;
         runSpeed = topLatSpeed;
@@ -47,6 +47,8 @@ public class PlayerMovement : MonoBehaviour {
         //grab our current velocity to use as a base for all calculations
         var velocity = controller.velocity;
 
+        anim.SetFloat("VerticalMov", velocity.y);
+
         if (controller.isGrounded)
             velocity.y = 0;
 
@@ -58,6 +60,8 @@ public class PlayerMovement : MonoBehaviour {
 
         //horizontal input
         horizontalMove = Input.GetAxisRaw("Horizontal");
+
+        anim.SetFloat("HorizontalMov", Mathf.Abs(horizontalMove));
 
         velocity.x = runSpeed * horizontalMove;
 
@@ -81,9 +85,21 @@ public class PlayerMovement : MonoBehaviour {
             if(controller.isGrounded)
                 velocity.x = 0;               
         }
-        
 
-        if(Input.GetButtonDown("Jump") && (controller.collisionState.hasCollisionToJump()))
+        //Check for wallslide
+        if(!controller.collisionState.below && controller.collisionState.hasWall())
+        {
+            anim.SetBool("OnWall", true);
+            Debug.Log("On wall");
+        }
+        else
+        {
+            anim.SetBool("OnWall", false);
+            Debug.Log("Off wall");
+        }
+
+
+        if (Input.GetButtonDown("Jump") && (controller.collisionState.hasCollisionToJump()))
         {
             //velocity.y = Mathf.Sqrt(2f * jumpForce * - gravity);
             velocity.y = GiveInitVelocity();
@@ -97,6 +113,7 @@ public class PlayerMovement : MonoBehaviour {
                     wallJump = -1;
             }
         }
+
 
         if(Input.GetButton("Jump"))
         {
