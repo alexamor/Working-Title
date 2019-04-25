@@ -4,10 +4,6 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour {
 
-    //Animation States
-    //private int idleState = Animator.StringToMash("Idle");
-    //private int runState = Animator.StringToMash("Run");
-    //private int jumpState = Animator.StringToMash("Jump");
 
     private float horizontalMove = 0f;
     //public float onGroundRunSpeed = 8f;
@@ -20,11 +16,20 @@ public class PlayerMovement : MonoBehaviour {
     public float wallJumpSpeedBonus = 2f; 
     //public float topLatMovmt = 2.6f;
     public float jumpTopDuration = 0.25f;
+
+    public float wallSlideSpeed = -5f;
     private float jumpTimer = 0;
 
     private float stdGravity = 0;
     private float curGravity;
     private int wallJump = 0;
+
+    private int[] dashDir; //0 - horizontal, 1 - vertical
+    private float dashTime = 0;
+    private bool canDash = true;
+    public float dashDuration = 0.3f;
+    public float dashSpeed = 30f;
+
 
     private ChMovAl controller;
     private Animator anim;
@@ -40,6 +45,9 @@ public class PlayerMovement : MonoBehaviour {
         //set gravity
         stdGravity = (-2f * topHeight ) / (jumpTopDuration * jumpTopDuration);
         curGravity = stdGravity;
+
+        //create dash direction array
+        dashDir = new int[2];
     }
 
     private void Update()
@@ -90,12 +98,10 @@ public class PlayerMovement : MonoBehaviour {
         if(!controller.collisionState.below && controller.collisionState.hasWall())
         {
             anim.SetBool("OnWall", true);
-            Debug.Log("On wall");
         }
         else
         {
             anim.SetBool("OnWall", false);
-            Debug.Log("Off wall");
         }
 
 
@@ -114,6 +120,10 @@ public class PlayerMovement : MonoBehaviour {
             }
         }
 
+        if (Input.GetButtonDown("Dash") && dashTime <= 0 && canDash)
+        {
+            createDash();
+        }
 
         if(Input.GetButton("Jump"))
         {
@@ -123,10 +133,12 @@ public class PlayerMovement : MonoBehaviour {
         if (Input.GetButtonUp("Jump") && jumpTimer < jumpTopDuration)
             curGravity = stdGravity * 2;
 
-        //Debug.Log("Collision to Jump  " + controller.collisionState.hasCollisionToJump());
-
         //apply gravity before moving
         velocity.y += curGravity * Time.deltaTime;
+
+        //make wallslide slow down fall
+        if (controller.collisionState.hasWall() && velocity.y < wallSlideSpeed)
+            velocity.y = wallSlideSpeed;
 
         if (velocity.y <= 0)
         {
@@ -134,6 +146,29 @@ public class PlayerMovement : MonoBehaviour {
             wallJump = 0;
         }
 
+
+        //Overwrite velocity in case of dash
+        if(dashTime > 0)
+        {
+            velocity = new Vector3(dashDir[0] * dashSpeed, dashDir[1] * dashSpeed, 0);
+            dashTime -= Time.deltaTime;
+            
+
+            //If dash ended this frame reset direction
+            if(dashTime < 0)
+            {
+                velocity = new Vector3(dashDir[0] * dashSpeed/10, dashDir[1] * dashSpeed/10, 0);
+
+                dashDir[0] = 0;
+                dashDir[1] = 0;
+            }
+        }
+
+        //Reset dash (for now touching ground resets dash)
+        if(dashTime < 0 && !canDash && controller.isGrounded)
+        {
+            canDash = true;
+        }
 
         controller.move(velocity * Time.deltaTime);
     }
@@ -157,5 +192,34 @@ public class PlayerMovement : MonoBehaviour {
         initVelocity = 2 * topHeight / jumpTopDuration;
 
         return initVelocity;
+    }
+
+    private void createDash()
+    {
+        //Set dash direction according to arrows/ASDW pressed
+        if (horizontalMove > 0)
+            dashDir[0] = 1;
+        else if (horizontalMove < 0)
+            dashDir[0] = -1;
+
+        if (Input.GetAxisRaw("Vertical") > 0)
+            dashDir[1] = 1;
+        else if(Input.GetAxisRaw("Vertical") < 0)
+            dashDir[1] = -1;
+
+        //Debug.Log("horizontal  " + horizontalMove + ", verical    " + Input.GetAxisRaw("Vertical"));
+
+        //If no direction selected dash horizontally
+        if (dashDir[0] == 0 && dashDir[1] == 0)
+        {
+            if (transform.localScale.x > 0f)
+                dashDir[0] = 1;
+            else
+                dashDir[0] = -1;
+        }
+
+        dashTime = dashDuration;
+
+        canDash = false;
     }
 }
