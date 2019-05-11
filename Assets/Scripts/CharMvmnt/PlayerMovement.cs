@@ -34,6 +34,8 @@ public class PlayerMovement : MonoBehaviour {
     private ChMovAl controller;
     private Animator anim;
 
+    public GameObject spirit;
+
     private void Awake()
     {
         controller = GetComponent<ChMovAl>();
@@ -123,6 +125,7 @@ public class PlayerMovement : MonoBehaviour {
         if (Input.GetButtonDown("Dash") && dashTime <= 0 && canDash)
         {
             createDash();
+            spirit.GetComponent<Animator>().SetInteger("dash", 1);
         }
 
         if(Input.GetButton("Jump"))
@@ -168,6 +171,7 @@ public class PlayerMovement : MonoBehaviour {
         if(dashTime < 0 && !canDash && controller.isGrounded)
         {
             canDash = true;
+            spirit.GetComponent<Animator>().SetInteger("dash", 0);
         }
 
         controller.move(velocity * Time.deltaTime);
@@ -176,15 +180,22 @@ public class PlayerMovement : MonoBehaviour {
     private void goLeft()
     {
         if (transform.localScale.x > 0f)
+        {
             transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+            spirit.transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+        }
+            
     }
 
     private void goRight()
     {
         if (transform.localScale.x < 0f)
+        {
             transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
-    }
+            spirit.transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z); ;
 
+        }
+    }
     private float GiveInitVelocity()
     {
         float initVelocity;
@@ -217,8 +228,14 @@ public class PlayerMovement : MonoBehaviour {
             else
                 dashDir[0] = -1;
         }
-
+        
         dashTime = dashDuration;
+
+        //Make diagonal move equal
+        if (Mathf.Abs(dashDir[0]) == 1 && Mathf.Abs(dashDir[1]) == 1)
+            dashSpeed = 10.7f;
+        else
+            dashSpeed = 15f;
 
         canDash = false;
     }

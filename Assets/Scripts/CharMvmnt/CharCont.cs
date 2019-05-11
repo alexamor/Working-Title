@@ -10,7 +10,7 @@ public class CharCont : MonoBehaviour
     [SerializeField] public float m_WallJumpLimit = 0.2f;
     [Range(0, 1)] [SerializeField] private float m_CrouchSpeed = .36f;          // Amount of maxSpeed applied to crouching movement. 1 = 100%
     [Range(0, .3f)] [SerializeField] private float m_MovementSmoothing = .05f;  // How much to smooth out the movement
-    [SerializeField] private bool m_AirControl = false;                         // Whether or not a player can steer while jumping;
+    //[SerializeField] private bool m_AirControl = false;                         // Whether or not a player can steer while jumping;
     [SerializeField] private LayerMask m_WhatIsGround;                          // A mask determining what is ground to the character
     [SerializeField] private Transform m_GroundCheck;                           // A position marking where to check if the player is grounded.
     [SerializeField] private Transform m_CeilingCheck;                          // A position marking where to check for ceilings
@@ -25,7 +25,7 @@ public class CharCont : MonoBehaviour
     private Vector3 m_Velocity = Vector3.zero;
     private float distToGround;
     private float offset = 5f;
-    private float wallJumpTimer = 0;
+    //private float wallJumpTimer = 0;
     private int jumpDiretion = 0;
     public float deceleration = 30f;
 
@@ -62,7 +62,7 @@ public class CharCont : MonoBehaviour
 
     private void FixedUpdate()
     {
-        bool wasGrounded = m_Grounded;
+        //bool wasGrounded = m_Grounded;
         m_Grounded = false;
 
         //UpdateDirections();
