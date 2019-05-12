@@ -35,6 +35,8 @@ public class PlayerMovement : MonoBehaviour {
     private Animator anim;
 
     public GameObject spirit;
+    public GameObject dashCloudPrefab;
+    private GameObject dashCloud;
 
     private void Awake()
     {
@@ -230,12 +232,43 @@ public class PlayerMovement : MonoBehaviour {
         }
         
         dashTime = dashDuration;
-
+        /*
         //Make diagonal move equal
         if (Mathf.Abs(dashDir[0]) == 1 && Mathf.Abs(dashDir[1]) == 1)
             dashSpeed = 10.7f;
         else
             dashSpeed = 15f;
+        */
+
+        //create dash cloud
+        dashCloud = Instantiate(dashCloudPrefab, new Vector3(this.transform.position.x, this.transform.position.y, 1f), Quaternion.identity);
+        //diagonal cloud
+        if (Mathf.Abs(dashDir[0]) == 1 && Mathf.Abs(dashDir[1]) == 1)
+        {
+            dashCloud.transform.localScale = new Vector3(dashCloud.transform.localScale.x * dashDir[0], dashCloud.transform.localScale.y * dashDir[1], dashCloud.transform.localScale.z);
+            dashCloud.GetComponent<Animator>().Play("cloudDiag");
+
+            dashSpeed = 10.7f;
+        }
+        //vertical/horizontal cloud
+        else
+        {
+                        
+            //Horizontal
+            if(Mathf.Abs(dashDir[0]) == 1)
+            {
+                dashCloud.transform.localScale = new Vector3(dashCloud.transform.localScale.x * dashDir[0], dashCloud.transform.localScale.y, dashCloud.transform.localScale.z);
+                dashCloud.GetComponent<Animator>().Play("cloud");
+            }
+            //Vertical
+            else
+            {
+                dashCloud.transform.localScale = new Vector3(dashCloud.transform.localScale.x, dashCloud.transform.localScale.y * dashDir[1], dashCloud.transform.localScale.z);
+                dashCloud.GetComponent<Animator>().Play("cloudVert");
+            }
+
+            dashSpeed = 15f;
+        }
 
         canDash = false;
     }
