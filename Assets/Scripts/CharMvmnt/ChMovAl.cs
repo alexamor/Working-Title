@@ -3,6 +3,8 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 
+//From prime31
+
 
 [RequireComponent(typeof(BoxCollider2D), typeof(Rigidbody2D))]
 public class ChMovAl : MonoBehaviour

@@ -24,8 +24,11 @@ public class PlayerMovement : MonoBehaviour {
     private float curGravity;
     private int wallJump = 0;
 
-    private int[] dashDir; //0 - horizontal, 1 - vertical
-    private float dashTime = 0;
+    [HideInInspector]
+    public int[] dashDir; //0 - horizontal, 1 - vertical
+    [HideInInspector]
+    public float dashTime = 0;
+
     private bool canDash = true;
     public float dashDuration = 0.3f;
     public float dashSpeed = 30f;
@@ -37,6 +40,12 @@ public class PlayerMovement : MonoBehaviour {
     public GameObject spirit;
     public GameObject dashCloudPrefab;
     private GameObject dashCloud;
+
+    [HideInInspector]
+    public Vector3 velocity;
+
+    [HideInInspector]
+    public bool lauched = false;
 
     private void Awake()
     {
@@ -57,7 +66,7 @@ public class PlayerMovement : MonoBehaviour {
     private void Update()
     {
         //grab our current velocity to use as a base for all calculations
-        var velocity = controller.velocity;
+        velocity = controller.velocity;
 
         anim.SetFloat("VerticalMov", velocity.y);
 
@@ -176,6 +185,13 @@ public class PlayerMovement : MonoBehaviour {
             spirit.GetComponent<Animator>().SetInteger("dash", 0);
         }
 
+        if(lauched == true)
+        {
+            velocity = new Vector3(dashDir[0] * dashSpeed * 3, dashDir[1] * dashSpeed * 3, 0);
+
+            lauched = false;
+        }
+
         controller.move(velocity * Time.deltaTime);
     }
 
@@ -271,5 +287,10 @@ public class PlayerMovement : MonoBehaviour {
         }
 
         canDash = false;
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        Debug.Log(collision.gameObject.name);
     }
 }

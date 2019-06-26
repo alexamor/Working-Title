@@ -68,6 +68,9 @@
     <Compile Include="Assets\Scripts\CharMvmnt\PlayerMovement.cs" />
     <Compile Include="Assets\Scripts\CharMvmnt\PlMovAl.cs" />
     <Compile Include="Assets\Scripts\dash\dashCloud.cs" />
+    <Compile Include="Assets\Scripts\MovingBlocks\BlockPlayerSpawner.cs" />
+    <Compile Include="Assets\Scripts\MovingBlocks\DashBlock.cs" />
+    <Compile Include="Assets\Scripts\MovingBlocks\DashBlockChecker.cs" />
     <Reference Include="Unity.2D.PixelPerfect.Editor">
       <HintPath>D:/Unity_Projects/Working Title/Library/ScriptAssemblies/Unity.2D.PixelPerfect.Editor.dll</HintPath>
     </Reference>
